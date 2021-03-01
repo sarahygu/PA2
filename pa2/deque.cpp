@@ -10,7 +10,7 @@ Deque<T>::Deque(){
     //represents position of first element in q
     n1 = 0;
     //represents position of last element in q
-    n2 = 0;
+    n2 = -1;
 }
 
 /**
@@ -40,6 +40,26 @@ template <class T>
 T Deque<T>::popL()
 {
     T popped = peekL();
+    n1++;
+
+    if(isEmpty()) {
+        clear();
+        n1=0;
+        n2=-1;
+    } else {
+            if ((n1 - 1) >= (n2 - n1)) {
+            vector<T> new;
+            for(int i = n1; i <= n2; i++){
+                new.push_back(data[i]);
+            }
+            clear();
+            for(int j = 0; j < new.size(); j++){
+                push_back(new.data[j]);
+            }
+            n1 = 0;
+            n2 = new.size() - 1;
+        }
+    }
     return popped;
 }
 /**
@@ -58,8 +78,17 @@ T Deque<T>::popR()
     data.pop_back;
     n2--;
 
-    if (n1 >= (n2 - n1)) {
-
+    if ((n1 - 1) >= (n2 - n1)) {
+        vector<T> new;
+        for(int i = n1; i <= n2; i++){
+            new.push_back(data[i]);
+        }
+        clear();
+        for(int j = 0; j < new.size(); j++){
+            push_back(new.data[j]);
+        }
+        n1 = 0;
+        n2 = new.size() - 1;
     }
     return popped;
 }
@@ -107,5 +136,5 @@ bool Deque<T>::isEmpty() const
     /**
      * @todo Your code here! 
      */
-    return empty();
+    return (n2 < n1);
 }
