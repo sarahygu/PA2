@@ -12,7 +12,7 @@
 template <class T>
 void Queue<T>::enqueue(T newItem)
 {
-    myQueue(newItem);
+    myQueue.pushR(newItem);
 }
 
 /**
