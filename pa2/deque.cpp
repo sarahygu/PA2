@@ -43,21 +43,21 @@ T Deque<T>::popL()
     n1++;
 
     if(isEmpty()) {
-        clear();
+        data.clear();
         n1=0;
         n2=-1;
     } else {
             if ((n1 - 1) >= (n2 - n1)) {
-            vector<T> new;
+            vector<T> new_q;
             for(int i = n1; i <= n2; i++){
-                new.push_back(data[i]);
+                new_q.push_back(data[i]);
             }
-            clear();
-            for(int j = 0; j < new.size(); j++){
-                push_back(new.data[j]);
+            data.clear();
+            for(int j = 0; j < new_q.size(); j++){
+                data.push_back(new_q[j]);
             }
             n1 = 0;
-            n2 = new.size() - 1;
+            n2 = new_q.size() - 1;
         }
     }
     return popped;
@@ -74,21 +74,27 @@ T Deque<T>::popR()
     /**
      * @todo Your code here! You will need to replace the following line.
      */
-    T popped = peekR;
-    data.pop_back;
+    T popped = peekR();
+    data.pop_back();
     n2--;
 
-    if ((n1 - 1) >= (n2 - n1)) {
-        vector<T> new;
-        for(int i = n1; i <= n2; i++){
-            new.push_back(data[i]);
+     if(isEmpty()) {
+        data.clear();
+        n1=0;
+        n2=-1;
+    } else {
+            if ((n1 - 1) >= (n2 - n1)) {
+            vector<T> new_q;
+            for(int i = n1; i <= n2; i++){
+                new_q.push_back(data[i]);
+            }
+            data.clear();
+            for(int j = 0; j < new_q.size(); j++){
+                data.push_back(new_q[j]);
+            }
+            n1 = 0;
+            n2 = new_q.size() - 1;
         }
-        clear();
-        for(int j = 0; j < new.size(); j++){
-            push_back(new.data[j]);
-        }
-        n1 = 0;
-        n2 = new.size() - 1;
     }
     return popped;
 }
