@@ -53,7 +53,7 @@ T Deque<T>::popL()
                 new_q.push_back(data[i]);
             }
             data.clear();
-            for(int j = 0; j < new_q.size(); j++){
+            for(unsigned int j = 0; j < new_q.size(); j++){
                 data.push_back(new_q[j]);
             }
             n1 = 0;
@@ -89,7 +89,7 @@ T Deque<T>::popR()
                 new_q.push_back(data[i]);
             }
             data.clear();
-            for(int j = 0; j < new_q.size(); j++){
+            for(unsigned int j = 0; j < new_q.size(); j++){
                 data.push_back(new_q[j]);
             }
             n1 = 0;

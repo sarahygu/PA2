@@ -22,6 +22,7 @@ TEST_CASE("stack::basic functions","[weight=1][part=stack]"){
     }
     REQUIRE( result == expected);
 }
+
 TEST_CASE("queue::basic functions","[weight=1][part=queue]"){
     Queue<int> intQueue;
     vector<int> result;

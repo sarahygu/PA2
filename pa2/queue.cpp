@@ -24,7 +24,7 @@ void Queue<T>::enqueue(T newItem)
 template <class T>
 T Queue<T>::dequeue()
 {
-    return myQueue.popR();
+    return myQueue.popL();
 }
 
 
@@ -37,7 +37,7 @@ T Queue<T>::dequeue()
 template <class T>
 T Queue<T>::peek()
 {
-    return myQueue.peekR();
+    return myQueue.peekL();
 }
 
 /**

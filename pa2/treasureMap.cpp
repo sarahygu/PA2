@@ -15,8 +15,10 @@ treasureMap::treasureMap(const PNG & baseim, const PNG & mazeim, pair<int,int> s
 void treasureMap::setGrey(PNG & im, pair<int,int> loc){
 
 /* YOUR CODE HERE */
+
     RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
-    pixel = new RGBAPixel(pixel->r, pixel->g, pixel->b); 
+    pixel = new RGBAPixel(pixel->r, pixel->g, pixel->b);
+    
 
 }
 
