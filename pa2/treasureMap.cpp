@@ -1,5 +1,6 @@
 #include "treasureMap.h"
 #include "queue.h"
+#include <cstdlib>
 using namespace std;
 
 treasureMap::treasureMap(const PNG & baseim, const PNG & mazeim, pair<int,int> s)
@@ -38,15 +39,15 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
 PNG treasureMap::renderMap(){
 
 /* YOUR CODE HERE */
-    PNG *map = new PNG(base);
+    PNG map = renderMaze();
 
-    vector<vector<bool>> visited (map->height(), vector<bool> (map->width(), 0));
-    vector<vector<int>> distances (map->height(), vector<int> (map->width(), 0));
+    vector<vector<bool>> visited (map.height(), vector<bool> (map.width(), 0));
+    vector<vector<int>> distances (map.height(), vector<int> (map.width(), 0));
     Queue<pair<int,int>> *locations = new Queue<pair<int,int>>();
 
     visited[start.first][start.second] = 1;
     distances[start.first][start.second] = 0;
-    setLOB(*map, * new pair<int, int>(start.first, start.second), distances[start.first][start.second]);
+    setLOB(map, * new pair<int, int>(start.first, start.second), distances[start.first][start.second]);
     locations->enqueue(start);
 
     while (!locations->isEmpty()) {
@@ -55,14 +56,14 @@ PNG treasureMap::renderMap(){
         for (unsigned int i = 0; i < neighbours.size(); i++) {
             pair<int,int> p = neighbours[i];
             if (good(visited, curr, p)) {
-                visited[p.first][p.second] = 1;
-                distances[p.first][p.second] = distances[curr.first][curr.second] + 1;
-                setLOB(*map, p, distances[p.first][p.second]);
+                visited[p.second][p.first] = 1;
+                distances[p.second][p.first] = distances[curr.second][curr.first] + 1;
+                setLOB(map, p, distances[p.second][p.first]);
                 locations->enqueue(p);
             }
         }
     }
-    return *map;
+    return map;
  
 }
 
@@ -70,18 +71,59 @@ PNG treasureMap::renderMap(){
 PNG treasureMap::renderMaze(){
 
 /* YOUR CODE HERE */
+    PNG render = PNG(base);
+    for (unsigned int i = start.second; i < base.height(); i ++) {
+        for(unsigned int j = start.first; j < base.width(); j++) {
+            if (render.getPixel(j,i) == maze.getPixel(j,i)) {
+                setGrey(render, * new pair<int,int> (i,j));
+            }
+        }
+    }
+
+   for (unsigned int k = start.first - 7; k < render.width(); k++) {
+       for (unsigned int l = start.second - 7; l < render.height(); l++) {
+           if (k >= 0 && l >=0 && (abs((int)k - start.first) == 7 || abs((int)l-start.second) == 7)) {
+               RGBAPixel *pixel = render.getPixel(k,l);
+               pixel->r = 255;
+               pixel->g = 0;
+               pixel->b = 0;
+           }
+       }
+   }
+
+    return render;
 
 }
 
 bool treasureMap::good(vector<vector<bool>> & v, pair<int,int> curr, pair<int,int> next){
 
 /* YOUR CODE HERE */
+    if (!(next.first >=0 && next.first < (int)base.width() && next.second >= 0 && next.second < (int)base.height())) {
+        return false;
+    }
+    if (v[next.second][next.first] == 1) {
+        return false;
+    }
+    RGBAPixel *currP = maze.getPixel(curr.first, curr.second);
+    RGBAPixel *nextP = base.getPixel(next.first, next.second);
+
+    if (!(currP->r == nextP->r && currP->g == nextP->g && currP->b == nextP->b)) {
+        return false;
+    } 
+
+    return true;
 
 }
 
 vector<pair<int,int>> treasureMap::neighbors(pair<int,int> curr) {
 
 /* YOUR CODE HERE */
+    vector<pair<int,int>> adjacent;
+    adjacent.push_back(*new pair<int,int> (curr.first - 1, curr.second));
+    adjacent.push_back(*new pair<int,int> (curr.first, curr.second - 1));
+    adjacent.push_back(*new pair<int,int> (curr.first + 1, curr.second ));
+    adjacent.push_back(*new pair<int,int> (curr.first, curr.second + 1));
 
+    return adjacent;
 }
 
