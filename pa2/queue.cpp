@@ -48,5 +48,5 @@ T Queue<T>::peek()
 template <class T>
 bool Queue<T>::isEmpty() const
 {
-    myQueue.isEmpty();
+    return myQueue.isEmpty();
 }
