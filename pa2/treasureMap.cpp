@@ -6,6 +6,9 @@ treasureMap::treasureMap(const PNG & baseim, const PNG & mazeim, pair<int,int> s
 {
 
 /* YOUR CODE HERE */
+    base = baseim;
+    maze = mazeim;
+    start = s;
 
 }
 
