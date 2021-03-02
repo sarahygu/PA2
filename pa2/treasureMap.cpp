@@ -34,11 +34,14 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
 /* YOUR CODE HERE */
     int value = d % 64;
     RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
-    pixel->b = value & 3; // 3 = 11
+    int bVal = value & 3; // 3 = 11
+    pixel->b = (pixel->b << 2) | bVal;
     // printf("%d ", pixel->b);
-    pixel->g = value & 12; // 12 = 1100
+    int gVal = value & 12; // 12 = 1100
+    pixel->g = (pixel->g << 2) | gVal;
     // printf("%d ", pixel->g);
-    pixel->r = value & 48; //48 = 110000
+    int rVal = value & 48; //48 = 110000
+    pixel->r = (pixel->r << 2) | rVal;
     // printf("%d ", pixel->r);
 
 }
