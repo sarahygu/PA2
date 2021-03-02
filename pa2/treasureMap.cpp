@@ -35,13 +35,22 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
     int value = d % 64;
     RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
     int bVal = value & 3; // 3 = 11
-    pixel->b = (pixel->b << 2) | bVal;
-    // printf("%d ", pixel->b);
-    int gVal = value & 12; // 12 = 1100
-    pixel->g = (pixel->g << 2) | gVal;
+    int tempB = pixel->b & 252;
+    pixel->b = tempB | bVal;
+    
+    int gVal = (value >> 2) & 3; // 12 = 1100
+    // printf("v: %d ", value);
+    // printf("OG g: %d ", pixel->g);
+    // printf("gVal: %d ", gVal);
+    int tempG = pixel->g & 252;
+    // printf("tempG: %d ", tempG);
+    pixel->g = tempG | gVal;
+    // printf("g: %d\n ", pixel->g);
     // printf("%d ", pixel->g);
-    int rVal = value & 48; //48 = 110000
-    pixel->r = (pixel->r << 2) | rVal;
+    int rVal = (value >> 4) & 3; //48 = 110000
+    int tempR = pixel->r & 252;
+    pixel->r = tempR | rVal;
+    
     // printf("%d ", pixel->r);
 
 }
@@ -49,15 +58,15 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
 PNG treasureMap::renderMap(){
 
 /* YOUR CODE HERE */
-    PNG map = renderMaze();
+    PNG *map = new PNG(base);
 
-    vector<vector<bool>> visited (map.height(), vector<bool> (map.width(), 0));
-    vector<vector<int>> distances (map.height(), vector<int> (map.width(), 0));
+    vector<vector<bool>> visited (map->height(), vector<bool> (map->width(), 0));
+    vector<vector<int>> distances (map->height(), vector<int> (map->width(), 0));
     Queue<pair<int,int>> *locations = new Queue<pair<int,int>>();
 
     visited[start.second][start.first] = 1;
     distances[start.second][start.first] = 0;
-    setLOB(map, * new pair<int, int>(start.first, start.second), distances[start.second][start.first]);
+    setLOB(*map, * new pair<int, int>(start.first, start.second), distances[start.second][start.first]);
     locations->enqueue(start);
 
     while (!locations->isEmpty()) {
@@ -68,12 +77,12 @@ PNG treasureMap::renderMap(){
             if (good(visited, curr, p)) {
                 visited[p.second][p.first] = 1;
                 distances[p.second][p.first] = distances[curr.second][curr.first] + 1;
-                setLOB(map, p, distances[p.second][p.first]);
+                setLOB(*map, p, distances[p.second][p.first]);
                 locations->enqueue(p);
             }
         }
     }
-    return map;
+    return *map;
  
 }
 
@@ -93,10 +102,10 @@ PNG treasureMap::renderMaze(){
     }
 
 
-   for (int k = start.first - 3; k < start.first + 3; k++) {
-       for (int l = start.second - 3; l < start.second + 3; l++) {
-           if (k >= 0 && k < (int)render->width() && l >=0 && l < (int)render->height()) {
-               RGBAPixel *pixel = render->getPixel(k,l);
+   for (int k = start.second - 3; k < start.second + 3; k++) {
+       for (int l = start.first - 3; l < start.first + 3; l++) {
+           if (k >= 0 && k < (int)render->height() && l >=0 && l < (int)render->width()) {
+               RGBAPixel *pixel = render->getPixel(l,k);
                pixel->r = 255;
                pixel->g = 0;
                pixel->b = 0;

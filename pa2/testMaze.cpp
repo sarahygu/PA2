@@ -51,7 +51,7 @@ TEST_CASE("treasureMap::basic no cycles", "[weight=1][part=treasureMap]")
 	treasuremazeans.readFromFile("images/greyedsnake.png");
     REQUIRE( treasuremaze == treasuremazeans );
 
-/*
+
     decoder dec(treasure,start);
 
     PNG soln = dec.renderSolution();
@@ -65,7 +65,7 @@ TEST_CASE("treasureMap::basic no cycles", "[weight=1][part=treasureMap]")
     PNG solnmazeans;
     solnmazeans.readFromFile("images/solnsnakemaze.png");
     REQUIRE( solnmaze == solnmazeans );
-    */
+ 
 
 }
 
