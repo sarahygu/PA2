@@ -34,9 +34,12 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
 /* YOUR CODE HERE */
     int value = d % 64;
     RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
-    pixel->r = value & 3; // 3 = 11
+    pixel->b = value & 3; // 3 = 11
+    // printf("%d ", pixel->b);
     pixel->g = value & 12; // 12 = 1100
-    pixel->b = value & 48; //48 = 110000
+    // printf("%d ", pixel->g);
+    pixel->r = value & 48; //48 = 110000
+    // printf("%d ", pixel->r);
 
 }
 
@@ -49,9 +52,9 @@ PNG treasureMap::renderMap(){
     vector<vector<int>> distances (map.height(), vector<int> (map.width(), 0));
     Queue<pair<int,int>> *locations = new Queue<pair<int,int>>();
 
-    visited[start.first][start.second] = 1;
-    distances[start.first][start.second] = 0;
-    setLOB(map, * new pair<int, int>(start.first, start.second), distances[start.first][start.second]);
+    visited[start.second][start.first] = 1;
+    distances[start.second][start.first] = 0;
+    setLOB(map, * new pair<int, int>(start.first, start.second), distances[start.second][start.first]);
     locations->enqueue(start);
 
     while (!locations->isEmpty()) {
