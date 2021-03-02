@@ -105,8 +105,7 @@ bool treasureMap::good(vector<vector<bool>> & v, pair<int,int> curr, pair<int,in
         return false;
     }
     RGBAPixel *currP = maze.getPixel(curr.first, curr.second);
-    RGBAPixel *nextP = base.getPixel(next.first, next.second);
-
+    RGBAPixel *nextP = maze.getPixel(next.first, next.second);
     if (!(currP->r == nextP->r && currP->g == nextP->g && currP->b == nextP->b)) {
         return false;
     } 
