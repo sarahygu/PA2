@@ -21,6 +21,10 @@ void treasureMap::setGrey(PNG & im, pair<int,int> loc){
     pixel->r = 2 * pixel->r/ 4;
     pixel->g = 2 * pixel->g/ 4;
     pixel->b = 2 * pixel->b/ 4;
+
+    // pixel->r = 0;
+    // pixel->g = 0;
+    // pixel->b = 255;
     
 
 }
@@ -30,9 +34,9 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
 /* YOUR CODE HERE */
     int value = d % 64;
     RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
-    pixel->r = value & 3;
-    pixel->g = value & 12;
-    pixel->b = value & 48;
+    pixel->r = value & 3; // 3 = 11
+    pixel->g = value & 12; // 12 = 1100
+    pixel->b = value & 48; //48 = 110000
 
 }
 
@@ -71,19 +75,22 @@ PNG treasureMap::renderMap(){
 PNG treasureMap::renderMaze(){
 
 /* YOUR CODE HERE */
-    PNG render = PNG(base);
-    for (unsigned int i = start.second; i < base.height(); i ++) {
-        for(unsigned int j = start.first; j < base.width(); j++) {
-            if (render.getPixel(j,i) == maze.getPixel(j,i)) {
-                setGrey(render, * new pair<int,int> (i,j));
+    PNG *render = new PNG(base);
+
+    for (unsigned int i = start.second; i < render->height(); i ++) {
+        for(unsigned int j = start.first; j < render->width(); j++) {
+            RGBAPixel *mazeP = maze.getPixel(j,i);
+            if (!(mazeP->r == 255 && mazeP->g == 255 && mazeP->b == 255)) {
+                setGrey(*render, *(new pair<int,int> (j,i)));
             }
         }
     }
 
-   for (unsigned int k = start.first - 7; k < render.width(); k++) {
-       for (unsigned int l = start.second - 7; l < render.height(); l++) {
-           if (k >= 0 && l >=0 && (abs((int)k - start.first) == 7 || abs((int)l-start.second) == 7)) {
-               RGBAPixel *pixel = render.getPixel(k,l);
+
+   for (int k = start.first - 3; k < start.first + 3; k++) {
+       for (int l = start.second - 3; l < start.second + 3; l++) {
+           if (k >= 0 && k < (int)render->width() && l >=0 && l < (int)render->height()) {
+               RGBAPixel *pixel = render->getPixel(k,l);
                pixel->r = 255;
                pixel->g = 0;
                pixel->b = 0;
@@ -91,7 +98,7 @@ PNG treasureMap::renderMaze(){
        }
    }
 
-    return render;
+    return *render;
 
 }
 
