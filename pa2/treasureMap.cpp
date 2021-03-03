@@ -21,9 +21,9 @@ void treasureMap::setGrey(PNG & im, pair<int,int> loc){
     int rVal = pixel->r;
     int gVal = pixel->g;
     int bVal = pixel->b;
-    pixel->r = 2 * (rVal/ 4);
-    pixel->g = 2 * (gVal/ 4);
-    pixel->b = 2 * (bVal/ 4);
+    pixel->r = 2*(rVal/4);
+    pixel->g = 2*(gVal/4);
+    pixel->b = 2*(bVal/4);
 
 }
 
@@ -59,7 +59,7 @@ PNG treasureMap::renderMap(){
 
     visited[start.second][start.first] = 1;
     distances[start.second][start.first] = 0;
-    setLOB(*map, * new pair<int, int>(start.first, start.second), distances[start.second][start.first]);
+    setLOB(*map, start, distances[start.second][start.first]);
     locations->enqueue(start);
 
     while (!locations->isEmpty()) {
@@ -85,39 +85,27 @@ PNG treasureMap::renderMaze(){
 /* YOUR CODE HERE */
     PNG *render = new PNG(base);
     vector<vector<bool>> visited (render->height(), vector<bool> (render->width(), 0));
-    Queue<pair<int,int>> *locations = new Queue<pair<int,int>>();
+    Queue<pair<int,int>> locations = Queue<pair<int,int>>();
     visited[start.second][start.first] = 1;
     setGrey(*render, start);
-    locations->enqueue(start);
+    locations.enqueue(start);
 
-    while (!locations->isEmpty()) {
-        pair<int,int> curr = locations->dequeue();
+    while (!locations.isEmpty()) {
+        pair<int,int> curr = locations.dequeue();
         vector<pair<int,int>> neighbours = neighbors(curr);
         for (unsigned int i = 0; i < neighbours.size(); i++) {
             pair<int,int> p = neighbours[i];
             if (good(visited, curr, p)) {
                 visited[p.second][p.first] = 1;
-                setGrey(*render,  *(new pair<int,int> (p.first,p.second)));
-                locations->enqueue(p);
+                setGrey(*render,  p);
+                locations.enqueue(p);
             }
         }
     }
 
-    /*
-    for (unsigned int i = start.second; i < render->height(); i ++) {
-        for(unsigned int j = start.first; j < render->width(); j++) {
-            RGBAPixel *mazeP = maze.getPixel(j,i);
-            if (!(mazeP->r == 255 && mazeP->g == 255 && mazeP->b == 255)) {
-                setGrey(*render, *(new pair<int,int> (j,i)));
-            }
-        }
-    }
-    */
-
-
-   for (int k = start.second - 3; k < start.second + 3; k++) {
-       for (int l = start.first - 3; l < start.first + 3; l++) {
-           if (k >= 0 && k < render->height() && l >=0 && l < render->width()) {
+   for (int k = (start.second - 3); k <= (start.second + 3); k++) {
+       for (int l = (start.first - 3); l <= (start.first + 3); l++) {
+           if ((k >= 0) && (k < (int)render->height()) && (l >=0) && (l < (int)render->width())) {
                RGBAPixel *pixel = render->getPixel(l,k);
                pixel->r = 255;
                pixel->g = 0;
