@@ -18,14 +18,12 @@ void treasureMap::setGrey(PNG & im, pair<int,int> loc){
 /* YOUR CODE HERE */
 
     RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
-    pixel->r = 2 * pixel->r/ 4;
-    pixel->g = 2 * pixel->g/ 4;
-    pixel->b = 2 * pixel->b/ 4;
-
-    // pixel->r = 0;
-    // pixel->g = 0;
-    // pixel->b = 255;
-    
+    int rVal = pixel->r;
+    int gVal = pixel->g;
+    int bVal = pixel->b;
+    pixel->r = 2 * (rVal/ 4);
+    pixel->g = 2 * (gVal/ 4);
+    pixel->b = 2 * (bVal/ 4);
 
 }
 
@@ -38,20 +36,15 @@ void treasureMap::setLOB(PNG & im, pair<int,int> loc, int d){
     int tempB = pixel->b & 252;
     pixel->b = tempB | bVal;
     
-    int gVal = (value >> 2) & 3; // 12 = 1100
-    // printf("v: %d ", value);
-    // printf("OG g: %d ", pixel->g);
-    // printf("gVal: %d ", gVal);
+    int gVal = (value >> 2) & 3; 
     int tempG = pixel->g & 252;
-    // printf("tempG: %d ", tempG);
     pixel->g = tempG | gVal;
-    // printf("g: %d\n ", pixel->g);
-    // printf("%d ", pixel->g);
-    int rVal = (value >> 4) & 3; //48 = 110000
+
+    int rVal = (value >> 4) & 3; 
     int tempR = pixel->r & 252;
     pixel->r = tempR | rVal;
     
-    // printf("%d ", pixel->r);
+
 
 }
 
@@ -91,7 +84,26 @@ PNG treasureMap::renderMaze(){
 
 /* YOUR CODE HERE */
     PNG *render = new PNG(base);
+    vector<vector<bool>> visited (render->height(), vector<bool> (render->width(), 0));
+    Queue<pair<int,int>> *locations = new Queue<pair<int,int>>();
+    visited[start.second][start.first] = 1;
+    setGrey(*render, start);
+    locations->enqueue(start);
 
+    while (!locations->isEmpty()) {
+        pair<int,int> curr = locations->dequeue();
+        vector<pair<int,int>> neighbours = neighbors(curr);
+        for (unsigned int i = 0; i < neighbours.size(); i++) {
+            pair<int,int> p = neighbours[i];
+            if (good(visited, curr, p)) {
+                visited[p.second][p.first] = 1;
+                setGrey(*render,  *(new pair<int,int> (p.first,p.second)));
+                locations->enqueue(p);
+            }
+        }
+    }
+
+    /*
     for (unsigned int i = start.second; i < render->height(); i ++) {
         for(unsigned int j = start.first; j < render->width(); j++) {
             RGBAPixel *mazeP = maze.getPixel(j,i);
@@ -100,11 +112,12 @@ PNG treasureMap::renderMaze(){
             }
         }
     }
+    */
 
 
    for (int k = start.second - 3; k < start.second + 3; k++) {
        for (int l = start.first - 3; l < start.first + 3; l++) {
-           if (k >= 0 && k < (int)render->height() && l >=0 && l < (int)render->width()) {
+           if (k >= 0 && k < render->height() && l >=0 && l < render->width()) {
                RGBAPixel *pixel = render->getPixel(l,k);
                pixel->r = 255;
                pixel->g = 0;
