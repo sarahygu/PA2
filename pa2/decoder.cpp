@@ -6,7 +6,6 @@ using namespace std;
 decoder::decoder(const PNG & tm, pair<int,int> s)
    :start(s),mapImg(tm) {
 
-/* YOUR CODE HERE */
     
 }
 
@@ -47,10 +46,30 @@ int decoder::pathLength(){
 
 }
 
+    // tests a neighbor (adjacent vertex) to see if it is 
+    // 1. within the image, 2. unvisited, and 3. coloured so that
+    // lower order bits fit the pattern prescribed by the encoder.
+    // An entry in table v is true if a cell has previously been 
+    // visited. table d contains the shortest distance from each location
+    // back to the start. the (r,g,b) colour of position next must have lower order
+    // bits (XX,XX,XX) that, when interpreted as an integer between 0 and 63,
+    // inclusive, is d[curr.second][curr.first] + 1 (mod 64).
 bool decoder::good(vector<vector<bool>> & v, vector<vector<int>> & d, pair<int,int> curr, pair<int,int> next){
 
-/* YOUR CODE HERE */
+ if (!(next.first >=0 && next.first < (int)base.width() && next.second >= 0 && next.second < (int)base.height())) {
+        return false;
+    }
+    if (v[next.second][next.first] == 1) {
+        return false;
+    }
+    int currD =  d[curr.second][curr.first];
+    RGBAPixel *nextP;
 
+    if (!(compare(nextP, (currD + 1) % 64))) {
+        return false;
+    } 
+
+    return true;
 }
 
 vector<pair<int,int>> decoder::neighbors(pair<int,int> curr) {
@@ -67,7 +86,8 @@ vector<pair<int,int>> decoder::neighbors(pair<int,int> curr) {
 
 
 bool decoder::compare(RGBAPixel p, int d){
-
+   int maze_value = ((p->r % 4) * 16) + ((p->g % 4) * 4) + (p->b % 4);
+   return maze_value == (d + 1) % 64;
 /* YOUR CODE HERE */
 
 }
