@@ -24,7 +24,14 @@ PNG decoder::renderMaze(){
 
 void decoder::setGrey(PNG & im, pair<int,int> loc){
 
-/* YOUR CODE HERE */
+
+    RGBAPixel *pixel = im.getPixel(loc.first, loc.second);
+    int rVal = pixel->r;
+    int gVal = pixel->g;
+    int bVal = pixel->b;
+    pixel->r = 2*(rVal/4);
+    pixel->g = 2*(gVal/4);
+    pixel->b = 2*(bVal/4);
 
 }
 
@@ -48,7 +55,13 @@ bool decoder::good(vector<vector<bool>> & v, vector<vector<int>> & d, pair<int,i
 
 vector<pair<int,int>> decoder::neighbors(pair<int,int> curr) {
 
-/* YOUR CODE HERE */
+    vector<pair<int,int>> adjacent;
+    adjacent.push_back(*new pair<int,int> (curr.first - 1, curr.second));
+    adjacent.push_back(*new pair<int,int> (curr.first, curr.second - 1));
+    adjacent.push_back(*new pair<int,int> (curr.first + 1, curr.second ));
+    adjacent.push_back(*new pair<int,int> (curr.first, curr.second + 1));
+
+    return adjacent;
 
 }
 
