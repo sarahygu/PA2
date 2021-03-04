@@ -65,7 +65,7 @@ bool decoder::good(vector<vector<bool>> & v, vector<vector<int>> & d, pair<int,i
     int currD =  d[curr.second][curr.first];
     RGBAPixel *nextP;
 
-    if (!(compare(nextP, (currD + 1) % 64))) {
+    if (!(compare(nextP, currD)) {
         return false;
     } 
 
