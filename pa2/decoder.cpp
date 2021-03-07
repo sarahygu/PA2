@@ -5,19 +5,116 @@ using namespace std;
 
 decoder::decoder(const PNG & tm, pair<int,int> s)
    :start(s),mapImg(tm) {
-
+    mapImg = tm;
+    start = s;
     
+    vector<vector<bool>> visited (mapImg.height(), vector<bool> (mapImg.width(), 0));
+    vector<vector<int>> distances (mapImg.height(), vector<int> (mapImg.width(), 0));
+    Queue<pair<int,int>> *locations = new Queue<pair<int,int>>();
+    
+
+    vector<vector<pair<int,int>>> last_location (mapImg.height(), vector<pair<int,int>> (mapImg.width(), make_pair(-1, -1)));
+    pair<int,int> max_dist_location (start.first,start.second); 
+
+    visited[start.second][start.first] = 1;
+    distances[start.second][start.first] = 0;
+    last_location[start.second][start.first] = make_pair(0, 0);
+
+
+
+    locations->enqueue(start);
+
+    while (!locations->isEmpty()) {
+        pair<int,int> curr = locations->dequeue();
+        vector<pair<int,int>> neighbours = neighbors(curr);
+        for (unsigned int i = 0; i < neighbours.size(); i++) {
+            pair<int,int> p = neighbours[i];
+            if (good(visited, distances, curr, p)) {
+                visited[p.second][p.first] = 1;
+                distances[p.second][p.first] = distances[curr.second][curr.first] + 1;
+                last_location[p.second][p.first] = curr;
+                
+                if (distances[p.second][p.first] > distances[max_dist_location.second][max_dist_location.first]) {
+                    max_dist_location.first = p.first;
+                    max_dist_location.second = p.second;
+
+                }
+
+                locations->enqueue(p);
+            }
+        }
+    }
+    Stack<pair<int,int>> *path_stack = new Stack<pair<int,int>>();
+    pair<int,int> prev_location;
+    pair<int,int> curr_location(max_dist_location.first, max_dist_location.second);
+
+    while (!((prev_location.first == start.first) && (prev_location.second == start.second))) {
+        prev_location = last_location[curr_location.second][curr_location.first];
+        path_stack->push(curr_location);
+        curr_location = prev_location;
+    }
+    pathPts.push_back(start);
+    while(!path_stack->isEmpty()) {
+         pathPts.push_back(path_stack->pop());
+    }
+
 }
 
 PNG decoder::renderSolution(){
+  PNG *solution = new PNG(mapImg);
 
-/* YOUR CODE HERE */
+  for(unsigned int i = 0; i < pathPts.size(); i++) {
+    pair<int,int> path_point = pathPts[i];
+    RGBAPixel *pixel = solution->getPixel(path_point.first, path_point.second);
+    pixel->r = 255;
+    pixel->g = 0;
+    pixel->b = 0;
 
+}
+return *solution;
 }
 
 PNG decoder::renderMaze(){
 
 /* YOUR CODE HERE */
+    PNG *render = new PNG(mapImg);
+    vector<vector<bool>> visited (render->height(), vector<bool> (render->width(), 0));
+    vector<vector<int>> distances (mapImg.height(), vector<int> (mapImg.width(), 0));
+
+    Queue<pair<int,int>> locations = Queue<pair<int,int>>();
+    visited[start.second][start.first] = 1;
+    distances[start.second][start.first] = 0;
+
+    setGrey(*render, start);
+    locations.enqueue(start);
+
+    while (!locations.isEmpty()) {
+        pair<int,int> curr = locations.dequeue();
+        vector<pair<int,int>> neighbours = neighbors(curr);
+        for (unsigned int i = 0; i < neighbours.size(); i++) {
+            pair<int,int> p = neighbours[i];
+            if (good(visited, distances, curr, p)) {
+                visited[p.second][p.first] = 1;
+                distances[p.second][p.first] = distances[curr.second][curr.first] + 1;
+
+                setGrey(*render,  p);
+                locations.enqueue(p);
+            }
+        }
+    }
+
+   for (int k = (start.second - 3); k <= (start.second + 3); k++) {
+       for (int l = (start.first - 3); l <= (start.first + 3); l++) {
+           if ((k >= 0) && (k < (int)render->height()) && (l >=0) && (l < (int)render->width())) {
+               RGBAPixel *pixel = render->getPixel(l,k);
+               pixel->r = 255;
+               pixel->g = 0;
+               pixel->b = 0;
+           }
+       }
+   }
+
+    return *render;
 
 }
 
@@ -35,15 +132,11 @@ void decoder::setGrey(PNG & im, pair<int,int> loc){
 }
 
 pair<int,int> decoder::findSpot(){
-
-/* YOUR CODE HERE */
-
+return pathPts[pathPts.size() - 1];
 }
 
 int decoder::pathLength(){
-
-/* YOUR CODE HERE */
-
+    return pathPts.size();
 }
 
     // tests a neighbor (adjacent vertex) to see if it is 
@@ -56,16 +149,15 @@ int decoder::pathLength(){
     // inclusive, is d[curr.second][curr.first] + 1 (mod 64).
 bool decoder::good(vector<vector<bool>> & v, vector<vector<int>> & d, pair<int,int> curr, pair<int,int> next){
 
- if (!(next.first >=0 && next.first < (int)base.width() && next.second >= 0 && next.second < (int)base.height())) {
+ if (!(next.first >=0 && next.first < (int)mapImg.width() && next.second >= 0 && next.second < (int)mapImg.height())) {
         return false;
     }
     if (v[next.second][next.first] == 1) {
         return false;
     }
     int currD =  d[curr.second][curr.first];
-    RGBAPixel *nextP;
-
-    if (!(compare(nextP, currD)) {
+    RGBAPixel *nextP = mapImg.getPixel(next.first, next.second);
+    if (!(compare(*nextP, currD))) {
         return false;
     } 
 
@@ -86,7 +178,7 @@ vector<pair<int,int>> decoder::neighbors(pair<int,int> curr) {
 
 
 bool decoder::compare(RGBAPixel p, int d){
-   int maze_value = ((p->r % 4) * 16) + ((p->g % 4) * 4) + (p->b % 4);
+   int maze_value = ((p.r % 4) * 16) + ((p.g % 4) * 4) + (p.b % 4);
    return maze_value == (d + 1) % 64;
 /* YOUR CODE HERE */
 
