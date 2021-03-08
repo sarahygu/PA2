@@ -167,11 +167,12 @@ bool decoder::good(vector<vector<bool>> & v, vector<vector<int>> & d, pair<int,i
 vector<pair<int,int>> decoder::neighbors(pair<int,int> curr) {
 
     vector<pair<int,int>> adjacent;
-    adjacent.push_back(*new pair<int,int> (curr.first - 1, curr.second));
-    adjacent.push_back(*new pair<int,int> (curr.first, curr.second - 1));
-    adjacent.push_back(*new pair<int,int> (curr.first + 1, curr.second ));
-    adjacent.push_back(*new pair<int,int> (curr.first, curr.second + 1));
-
+    adjacent.push_back(*new pair<int,int> (curr.first - 1, curr.second )); // top
+    adjacent.push_back(*new pair<int,int> (curr.first, curr.second + 1)); // right
+    adjacent.push_back(*new pair<int,int> (curr.first + 1, curr.second)); // bottom
+    adjacent.push_back(*new pair<int,int> (curr.first, curr.second - 1)); // left
+    
+    
     return adjacent;
 
 }
